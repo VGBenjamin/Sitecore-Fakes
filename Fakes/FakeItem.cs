@@ -62,8 +62,35 @@ namespace Sitecore.Fakes
         }
 
       
-        public Item FakeParent { get; set; }
-        public ItemList FakeChildren { get; set; }
+    private Item fakeParent;
+        public Item FakeParent
+        {
+            get { return fakeParent; }
+            set
+            {
+                fakeParent = value;
+                if (fakeParent is FakeItem)
+                    // Directy assign the variable to avoid the infinite loops
+                    ((FakeItem) fakeParent).fakeChildren.Add(this); 
+                
+            }
+        }
+
+        private ItemList fakeChildren;
+        public ItemList FakeChildren
+        {
+            get { return fakeChildren; } 
+            set 
+            { 
+                fakeChildren = value;
+                foreach (var fakeChild in fakeChildren)
+                {
+                    if (fakeChild is FakeItem)
+                        // Directy assign the variable to avoid the infinite loops
+                        ((FakeItem)fakeChild).fakeParent = this;
+                }
+            }
+        }
 
         
     }
